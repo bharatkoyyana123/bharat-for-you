@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>bharat for you — Notes & AI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fb;color:#172033}
+header{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;padding:22px 6%;display:flex;align-items:center;justify-content:space-between;gap:15px;position:sticky;top:0;z-index:10}
+.logo{font-size:25px;font-weight:800}.logo span{opacity:.75}
+nav button{border:0;background:rgba(255,255,255,.16);color:white;padding:10px 14px;border-radius:20px;cursor:pointer;margin-left:5px}
+.hero{padding:55px 6%;background:white;text-align:center}.hero h1{font-size:42px;margin-bottom:10px}.hero p{color:#657085;font-size:17px;margin-bottom:25px}
+.search{max-width:700px;margin:auto;display:flex;background:#fff;border:1px solid #dbe0ea;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px #0000000b}
+.search input{flex:1;border:0;padding:16px;font-size:16px;outline:0}.search button{border:0;background:#4f46e5;color:white;padding:0 22px;font-weight:bold}
+main{max-width:1150px;margin:35px auto;padding:0 20px}.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.categories{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}.cat{border:1px solid #dbe0ea;background:white;padding:10px 15px;border-radius:22px;cursor:pointer}.cat.active{background:#4f46e5;color:white;border-color:#4f46e5}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.card{background:white;border:1px solid #e4e7ee;border-radius:16px;padding:20px;box-shadow:0 5px 18px #00000008}.tag{font-size:12px;color:#4f46e5;font-weight:bold}.card h3{margin:10px 0 7px}.card p{color:#697386;font-size:14px;line-height:1.5}.actions{display:flex;gap:8px;margin-top:16px}.actions button,.upload-btn{border:0;border-radius:9px;padding:10px 13px;cursor:pointer;font-weight:600}.view{background:#eef0ff;color:#4338ca}.download{background:#4f46e5;color:white}
+.ai{margin:45px 0;background:#111827;color:white;border-radius:22px;padding:25px}.ai h2{margin-bottom:7px}.ai small{color:#aeb8ca}.chat{height:310px;background:#0b1220;margin-top:18px;border-radius:14px;padding:15px;overflow:auto}.msg{padding:11px 13px;border-radius:12px;margin:8px 0;max-width:82%;line-height:1.45}.bot{background:#202b40}.user{background:#4f46e5;margin-left:auto}.chatbar{display:flex;gap:8px;margin-top:10px}.chatbar input{flex:1;padding:13px;border-radius:10px;border:0;outline:0}.chatbar button{padding:0 18px;border:0;border-radius:10px;background:#7c3aed;color:white;font-weight:bold}
+.upload{display:none;position:fixed;inset:0;background:#0008;align-items:center;justify-content:center;z-index:20}.modal{background:white;padding:25px;border-radius:18px;width:min(450px,90%)}.modal input,.modal select{width:100%;padding:12px;margin:8px 0 14px;border:1px solid #ddd;border-radius:9px}.modal button{padding:11px 16px;border:0;border-radius:9px;background:#4f46e5;color:white}.close{float:right;background:#eee!important;color:#222!important}
+footer{text-align:center;padding:35px;color:#788297}
+@media(max-width:600px){.hero h1{font-size:32px}header{padding:17px 4%}.hero{padding:40px 5%}nav button{padding:8px 10px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">bharat <span>for you</span></div>
+  <nav><button onclick="scrollToId('notes')">Notes</button><button onclick="scrollToId('ai')">AI Bot</button><button onclick="openUpload()">Upload</button></nav>
+</header>
+
+<section class="hero">
+  <h1>Learn. Share. Solve.</h1>
+  <p>Notes for students, powered by a smart problem-solving assistant.</p>
+  <div class="search"><input id="search" placeholder="Search notes, subjects or chapters..." oninput="renderNotes()"><button onclick="renderNotes()">Search</button></div>
+</section>
+
+<main>
+<section id="notes">
+<div class="section-title"><h2>📚 Notes Library</h2><button class="upload-btn" onclick="openUpload()">＋ Upload Notes</button></div>
+<div class="categories">
+<button class="cat active" onclick="setCategory('All',this)">All</button>
+<button class="cat" onclick="setCategory('Physics',this)">Physics</button>
+<button class="cat" onclick="setCategory('Chemistry',this)">Chemistry</button>
+<button class="cat" onclick="setCategory('Maths',this)">Maths</button>
+<button class="cat" onclick="setCategory('Biology',this)">Biology</button>
+<button class="cat" onclick="setCategory('Computer Science',this)">Computer Science</button>
+</div>
+<div id="grid" class="grid"></div>
+</section>
+
+<section class="ai" id="ai">
+<h2>🤖 Bharat AI — Problem Solver</h2>
+<small>Ask a question from Maths, Physics, Chemistry, Biology, coding, or other study topics.</small>
+<div class="chat" id="chat">
+<div class="msg bot">Hi! I'm Bharat AI 👋<br>Send me a problem and I'll help you solve it step by step.</div>
+</div>
+<div class="chatbar"><input id="question" placeholder="Type your problem..." onkeydown="if(event.key==='Enter')askAI()"><button onclick="askAI()">Ask AI</button></div>
+</section>
+</main>
+
+<div class="upload" id="upload">
+<div class="modal">
+<button class="close" onclick="closeUpload()">✕</button>
+<h2>Upload Notes</h2><br>
+<input id="noteTitle" placeholder="Note title">
+<select id="noteSubject"><option>Physics</option><option>Chemistry</option><option>Maths</option><option>Biology</option><option>Computer Science</option></select>
+<input id="noteFile" type="file" accept=".pdf,.jpg,.jpeg,.png">
+<button onclick="addNote()">Add Note</button>
+</div>
+</div>
+
+<footer>© 2026 bharat for you • Built for students</footer>
+
+<script>
+const notes=[
+ {title:"Kinematics — Complete Notes",subject:"Physics",desc:"Motion, equations of motion, graphs and important formulas."},
+ {title:"General Organic Chemistry",subject:"Chemistry",desc:"Electronic effects, acidity/basicity and reaction fundamentals."},
+ {title:"Straight Lines",subject:"Maths",desc:"Slope, equations, distance, angle and important JEE formulas."},
+ {title:"Cell Biology",subject:"Biology",desc:"Cell structure, organelles and key concepts."},
+ {title:"Python Basics",subject:"Computer Science",desc:"Variables, conditions, loops, functions and beginner programs."},
+ {title:"Current Electricity",subject:"Physics",desc:"Ohm's law, resistance, circuits and Kirchhoff's laws."}
+];
+let category="All";
+
+function renderNotes(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const grid=document.getElementById("grid");
+ const filtered=notes.filter(n=>(category==="All"||n.subject===category)&&
+ (n.title.toLowerCase().includes(q)||n.subject.toLowerCase().includes(q)||n.desc.toLowerCase().includes(q)));
+ grid.innerHTML=filtered.length?filtered.map((n,i)=>`
+ <div class="card"><span class="tag">${n.subject}</span><h3>${n.title}</h3><p>${n.desc}</p>
+ <div class="actions"><button class="view" onclick="alert('Preview: ${n.title}')">Preview</button><button class="download" onclick="downloadDemo('${n.title}')">Download</button></div></div>`).join("")
+ :"<p>No notes found. Try another search.</p>";
+}
+function setCategory(c,el){category=c;document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));el.classList.add("active");renderNotes()}
+function scrollToId(id){document.getElementById(id).scrollIntoView({behavior:"smooth"})}
+function openUpload(){document.getElementById("upload").style.display="flex"}
+function closeUpload(){document.getElementById("upload").style.display="none"}
+function addNote(){
+ const title=document.getElementById("noteTitle").value.trim(),subject=document.getElementById("noteSubject").value,file=document.getElementById("noteFile").files[0];
+ if(!title||!file){alert("Please enter a title and choose a file.");return}
+ notes.unshift({title,subject,desc:"Uploaded note • "+file.name});
+ closeUpload();renderNotes();alert("Note added to this browser session!");
+ document.getElementById("noteTitle").value="";document.getElementById("noteFile").value="";
+}
+function downloadDemo(title){
+ alert("Demo download: '"+title+"'. Connect a backend/storage service to enable real PDF downloads.");
+}
+function askAI(){
+ const input=document.getElementById("question"),q=input.value.trim();if(!q)return;
+ const chat=document.getElementById("chat");
+ chat.innerHTML+=`<div class="msg user">${escapeHtml(q)}</div>`;
+ input.value="";
+ setTimeout(()=>{
+   let answer="I can help break this problem into steps. For a fully powered AI solver, connect this chat to an AI API/backend. In this demo, try asking for a topic such as “explain quadratic equations” or “what is Newton's second law?”";
+   const l=q.toLowerCase();
+   if(l.includes("quadratic")) answer="Quadratic equations have the form ax² + bx + c = 0. A common method is x = (-b ± √(b²−4ac))/(2a). Send me your exact equation and I can work through it.";
+   else if(l.includes("newton")&&l.includes("second")) answer="Newton's second law states that net force equals mass × acceleration: F = ma. If you give me the values in a question, I can show the calculation.";
+   else if(l.includes("python")) answer="Python is a programming language used for automation, data science, web development and AI. Send me your code or programming problem.";
+   chat.innerHTML+=`<div class="msg bot">${answer}</div>`;chat.scrollTop=chat.scrollHeight;
+ },450);
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+renderNotes();
+</script>
+</body>
+</html>
